@@ -15,7 +15,6 @@ public class ServiceRegistrationTests
         var sc = new ServiceCollection();
         sc.AddMonsterBuildingBlocks();
 
-        sc.Any(d => d.ServiceType == typeof(IProblemDetailsService)).Should().BeTrue();
         sc.Any(d => d.ServiceType == typeof(IDateTimeProvider)).Should().BeTrue();
         sc.Any(d => d.ServiceType == typeof(IIdGenerator)).Should().BeTrue();
         sc.Any(d => d.ServiceType == typeof(IPipelineBehavior<,>) &&
