@@ -1,39 +1,67 @@
+using Content.Application;
+using Content.Infrastructure;
+using Hellang.Middleware.ProblemDetails;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Monster.BuildingBlocks;
+using Serilog;
+using System.Net;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// ---- Serilog (console) ----
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
+builder.Host.UseSerilog();
 
+// ---- Services ----
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// BuildingBlocks (ProblemDetails, Validation pipeline, providers, etc.)
+builder.Services.AddMonsterBuildingBlocks();
+
+// Content layers
+builder.Services.AddContentApplication();
+builder.Services.AddContentInfrastructure(builder.Configuration);
+
+// Health checks (DB)
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ContentDbContext>("content-db");
+
+// ---- App ----
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMonsterWebPipeline(); // Serilog request logging + ProblemDetails + Correlation-ID
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Health endpoints
+app.MapHealthChecks("/health/live");  // basic liveness
+app.MapHealthChecks("/health/ready"); // readiness (same for now; can extend with custom predicate)
 
-app.MapGet("/weatherforecast", () =>
+// Minimal info & ping endpoints (for smoke tests)
+app.MapGet("/_info", () => Results.Json(new
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    service = "Content.Api",
+    version = typeof(Program).Assembly.GetName().Version?.ToString(),
+    environment = app.Environment.EnvironmentName
+}, statusCode: StatusCodes.Status200OK));
+
+app.MapGet("/api/ping", () =>
+{
+    var res = ResponseDto<string>.Ok("pong");
+    return Results.Json(res, statusCode: (int)res.response_code);
 })
-.WithName("GetWeatherForecast");
+.Produces((int)HttpStatusCode.OK);
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public partial class Program { }
