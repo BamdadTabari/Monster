@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Content.Domain\Content.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Monster.BuildingBlocks\Monster.BuildingBlocks.csproj" />
   </ItemGroup>
 
   <ItemGroup>

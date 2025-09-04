@@ -9,7 +9,7 @@ namespace Content.Infrastructure.Persistence;
 /// EF Core generic repository. Correctly applies AsNoTracking when requested,
 /// supports includes, paging, and cancellation.
 /// </summary>
-public sealed class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class
+public sealed class EfRepository<TEntity> : Application.Abstractions.Persistence.IRepository<TEntity> where TEntity : class
 {
     private readonly ContentDbContext _db;
 

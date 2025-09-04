@@ -1,3 +1,4 @@
+using Content.Application.Abstractions.Persistence;
 using Content.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
