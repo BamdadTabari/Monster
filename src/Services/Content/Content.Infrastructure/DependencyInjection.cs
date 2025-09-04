@@ -1,3 +1,4 @@
+using Content.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,9 @@ public static class DependencyInjection
         services.AddDbContext<ContentDbContext>(opt =>
             opt.UseNpgsql(cs));
 
-        // Health checks can be registered in API; DbContext registration here is enough.
+         // Repositories + Unit of Work (open generics)
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+        services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         return services;
     }
 }
