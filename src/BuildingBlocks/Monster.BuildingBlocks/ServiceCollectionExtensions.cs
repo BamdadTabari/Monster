@@ -1,0 +1,21 @@
+using Hellang.Middleware.ProblemDetails;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Monster.BuildingBlocks;
+
+public static class ServiceCollectionExtensions
+{
+    /// <summary>Registers BuildingBlocks services (ProblemDetails, Validation pipeline, HttpContext accessor, time/id providers).</summary>
+    public static IServiceCollection AddMonsterBuildingBlocks(this IServiceCollection services)
+    {
+        services.AddStandardProblemDetails();
+        services.AddHttpContextAccessor();
+        services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddSingleton<IIdGenerator, GuidIdGenerator>();
+
+        // MediatR Validation pipeline (consumer must add MediatR scanning separately)
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        return services;
+    }
+}
