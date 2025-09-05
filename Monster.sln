@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monster.Gateway", "src\Gate
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monster.Application.Abstractions", "src\BuildingBlocks\Monster.Application.Abstractions\Monster.Application.Abstractions.csproj", "{9DA77E23-C8EF-463D-B64F-84FCB5D4C86D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content.Application.Tests", "tests\Content.Application.Tests\Content.Application.Tests.csproj", "{3C3AAE0F-FB1A-4759-9DAD-642052C50387}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,18 @@ Global
 		{9DA77E23-C8EF-463D-B64F-84FCB5D4C86D}.Release|x64.Build.0 = Release|Any CPU
 		{9DA77E23-C8EF-463D-B64F-84FCB5D4C86D}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DA77E23-C8EF-463D-B64F-84FCB5D4C86D}.Release|x86.Build.0 = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|x64.Build.0 = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,5 +276,6 @@ Global
 		{6306A8FB-679E-111F-6585-8F70E0EE6013} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{3332987C-54D9-4073-BE1E-45566AFA7EA7} = {6306A8FB-679E-111F-6585-8F70E0EE6013}
 		{9DA77E23-C8EF-463D-B64F-84FCB5D4C86D} = {90298CBA-BD6F-3A0A-69D5-97CAD7B05E7E}
+		{3C3AAE0F-FB1A-4759-9DAD-642052C50387} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
