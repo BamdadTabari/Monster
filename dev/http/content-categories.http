@@ -1,0 +1,27 @@
+### Create category
+POST http://localhost:5081/api/categories
+Content-Type: application/json
+
+{
+  "name": "Tech",
+  "description": "All tech news and tutorials"
+}
+
+### List categories
+GET http://localhost:5081/api/categories?pageNumber=1&pageSize=10&search=te
+
+### Get by id (replace {{id}})
+@id = REPLACE_WITH_RETURNED_GUID
+GET http://localhost:5081/api/categories/{{id}}
+
+### Rename
+PUT http://localhost:5081/api/categories/{{id}}/name
+Content-Type: application/json
+
+{
+  "id": "{{id}}",
+  "name": "Tech News"
+}
+
+### Delete
+DELETE http://localhost:5081/api/categories/{{id}}
