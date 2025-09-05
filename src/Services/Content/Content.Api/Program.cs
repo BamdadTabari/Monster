@@ -1,3 +1,4 @@
+using Content.Api.Endpoints;
 using Content.Application;
 using Content.Infrastructure;
 using Hellang.Middleware.ProblemDetails;
@@ -45,6 +46,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers(); 
+
+app.MapCategoryEndpoints();
+
 
 // Health endpoints
 app.MapHealthChecks("/health/live");  // basic liveness
