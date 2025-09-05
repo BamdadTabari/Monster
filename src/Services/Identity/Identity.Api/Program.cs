@@ -20,6 +20,7 @@ builder.Host.UseSerilog();
 // Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 builder.Services.AddMonsterBuildingBlocks();  // ProblemDetails + Validation pipeline + providers
 builder.Services.AddIdentityApplication();
@@ -30,6 +31,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
+
 app.UseMonsterWebPipeline(); // Serilog request logging + ProblemDetails + Correlation-ID
 
 if (app.Environment.IsDevelopment())
@@ -37,6 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers();
 
 // Health endpoints
 app.MapHealthChecks("/health/live");

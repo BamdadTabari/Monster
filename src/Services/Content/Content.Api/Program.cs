@@ -20,6 +20,7 @@ builder.Host.UseSerilog();
 // ---- Services ----
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 
 // BuildingBlocks (ProblemDetails, Validation pipeline, providers, etc.)
 builder.Services.AddMonsterBuildingBlocks();
@@ -42,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers(); 
 
 // Health endpoints
 app.MapHealthChecks("/health/live");  // basic liveness
