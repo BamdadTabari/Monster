@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Identity.Domain\Identity.Domain.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Monster.BuildingBlocks\Monster.BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Monster.Persistence.Abstractions\Monster.Persistence.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Monster.Application.Abstractions\Monster.Application.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Monster.Application.Abstractions;
 
 namespace Content.Application;
 
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<IApplicationAssemblyMarker>());
         // Validators are discovered via FluentValidation when you add them per-request type.
+         services.AddMonsterApplicationCore(); // 👈 shared transaction behavior
         return services;
     }
 }

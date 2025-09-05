@@ -1,6 +1,7 @@
 using Hellang.Middleware.ProblemDetails;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Monster.BuildingBlocks.Behaviors;
 
 namespace Monster.BuildingBlocks;
 
@@ -16,6 +17,7 @@ public static class ServiceCollectionExtensions
 
         // MediatR Validation pipeline (consumer must add MediatR scanning separately)
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         return services;
     }
 }
