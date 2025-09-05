@@ -1,4 +1,4 @@
-using Content.Application.Abstractions.Persistence;
+using Monster.Persistence.Abstractions;
 using Content.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

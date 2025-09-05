@@ -1,4 +1,4 @@
-using Content.Application.Abstractions.Persistence;
+using Monster.Persistence.Abstractions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Content.Infrastructure.Persistence;
