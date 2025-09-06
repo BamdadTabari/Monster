@@ -1,7 +1,9 @@
 using Content.Domain.Entities;
 using Monster.Persistence.Abstractions;
 using Monster.BuildingBlocks;
-using Monster.Application.Abstractions; // IIdGenerator
+using Monster.Application.Abstractions;
+using Monster.BuildingBlocks.Outbox;
+using Content.Application.Categories.Events; // IIdGenerator
 
 namespace Content.Application.Categories.Create;
 
@@ -9,11 +11,13 @@ public sealed class CreateCategoryHandler : CommandHandler<CreateCategoryCommand
 {
     private readonly IRepository<Category> _repo;
     private readonly IIdGenerator _ids;
+    private readonly IIntegrationEventPublisher _events;
 
-    public CreateCategoryHandler(IRepository<Category> repo, IUnitOfWork uow, IIdGenerator ids) : base(uow)
+    public CreateCategoryHandler(IRepository<Category> repo, IUnitOfWork uow, IIdGenerator ids, IIntegrationEventPublisher events) : base(uow)
     {
         _repo = repo;
         _ids = ids;
+        _events = events;
     }
 
     public override async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken ct)
@@ -28,7 +32,7 @@ public sealed class CreateCategoryHandler : CommandHandler<CreateCategoryCommand
 
         await _repo.AddAsync(entity, ct);
         await Uow.SaveChangesAsync(ct);
-
+        await _events.PublishAsync(new CategoryCreated(entity.Id, entity.Name), topic: "content.category.created", ct: ct);
         return Ok(entity.Id);
     }
 }

@@ -6,6 +6,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Monster.BuildingBlocks;
+using Monster.BuildingBlocks.Messaging;
+using Monster.BuildingBlocks.Outbox;
 using Serilog;
 using System.Net;
 
@@ -25,6 +27,12 @@ builder.Services.AddControllers();
 
 // BuildingBlocks (ProblemDetails, Validation pipeline, providers, etc.)
 builder.Services.AddMonsterBuildingBlocks();
+builder.Services.AddSingleton<IOutboxStore, InMemoryOutboxStore>();
+builder.Services.AddSingleton<IMessageBusPublisher, InMemoryMessageBusPublisher>();
+builder.Services.AddSingleton<IIntegrationEventPublisher, OutboxIntegrationEventPublisher>();
+
+// Run dispatcher inside API process for dev (DB-less)
+builder.Services.AddHostedService<OutboxDispatcherHostedService>();
 
 // Content layers
 builder.Services.AddContentApplication();
