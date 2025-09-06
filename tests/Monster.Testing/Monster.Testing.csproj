@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>  <!-- or net10.0 to match your solution -->
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Only packages that are truly shared across tests. Keep this light. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="*" />
+  </ItemGroup>
+
+  <!-- Reference prod abstractions used by the fakes -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\Monster.BuildingBlocks\Monster.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\Monster.Persistence.Abstractions\Monster.Persistence.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,7 @@
 using Content.Application.Categories.List;
 using Content.Domain.Entities;
-using Content.Application.Tests.Fakes;
 using FluentAssertions;
+using Monster.Testing.Fakes;
 
 namespace Content.Application.Tests;
 

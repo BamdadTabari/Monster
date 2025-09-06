@@ -2,14 +2,15 @@ using System.Linq.Expressions;
 using Monster.BuildingBlocks;
 using Monster.Persistence.Abstractions;
 
-namespace Content.Application.Tests.Fakes;
+namespace Monster.Testing.Fakes;
 
+// Simple in-memory backing store. Good for unit & light API tests.
 public sealed class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     private readonly List<TEntity> _store = new();
 
     public Task<TEntity?> GetByIdAsync(object[] keyValues, CancellationToken ct = default)
-        => Task.FromResult<TEntity?>(null); // not needed here
+        => Task.FromResult<TEntity?>(null); // not used by most handlers; implement if you need
 
     public Task<TEntity?> FirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -57,9 +58,9 @@ public sealed class FakeRepository<TEntity> : IRepository<TEntity> where TEntity
 
     public Task AddAsync(TEntity entity, CancellationToken ct = default) { _store.Add(entity); return Task.CompletedTask; }
     public Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default) { _store.AddRange(entities); return Task.CompletedTask; }
-    public void Update(TEntity entity) { /* no-op for fake */ }
+    public void Update(TEntity entity) { /* no-op */ }
     public void Remove(TEntity entity) { _store.Remove(entity); }
 
-    // helper for seeding
+    public void Clear() => _store.Clear();
     public void Seed(params TEntity[] entities) => _store.AddRange(entities);
 }
