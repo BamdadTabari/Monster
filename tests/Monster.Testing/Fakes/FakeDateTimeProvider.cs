@@ -5,9 +5,7 @@ namespace Monster.Testing.Fakes;
 public sealed class FakeDateTimeProvider : IDateTimeProvider
 {
     private DateTime _utcNow;
-
-    DateTime IDateTimeProvider.UtcNow => DateTime.UtcNow;
-
+    
     public FakeDateTimeProvider(DateTime? fixedUtcNow = null)
         => _utcNow = fixedUtcNow ?? new DateTime(2030, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

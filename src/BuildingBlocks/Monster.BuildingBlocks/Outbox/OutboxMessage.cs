@@ -7,5 +7,6 @@ public sealed record OutboxMessage(
     string Payload,           // JSON
     DateTime OccurredUtc,
     DateTime? DispatchedUtc,
-    int Attempt
+    int Attempt,
+    DateTime NextAttemptUtc
 );

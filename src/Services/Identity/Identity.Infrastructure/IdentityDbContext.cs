@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Monster.BuildingBlocks;
+using Monster.BuildingBlocks.Outbox;
 
 namespace Identity.Infrastructure;
 
@@ -21,9 +22,9 @@ public sealed class IdentityDbContext : DbContext
             cfg.HasKey(x => x.Id);
             cfg.Property(x => x.Type).IsRequired();
             cfg.Property(x => x.Payload).IsRequired();
-            cfg.Property(x => x.OccurredOnUtc).IsRequired();
-            cfg.Property(x => x.ProcessedOnUtc);
-            cfg.Property(x => x.Error);
+            cfg.Property(x => x.DispatchedUtc).IsRequired();
+            cfg.Property(x => x.NextAttemptUtc);
+            cfg.Property(x => x.Attempt);
         });
     }
 }
