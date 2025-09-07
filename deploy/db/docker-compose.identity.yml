@@ -1,0 +1,37 @@
+version: "3.9"
+name: monster-identity-db
+
+services:
+  pg_identity:
+    image: postgres:16
+    container_name: pg_identity
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: monster
+      POSTGRES_PASSWORD: monster
+      POSTGRES_DB: monster_identity
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_identity_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monster -d monster_identity"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Optional UI
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin_identity
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@monster.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - pg_identity
+
+volumes:
+  pg_identity_data:

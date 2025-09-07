@@ -35,6 +35,8 @@ public static class DependencyInjection
         // outbox
         services.AddScoped<IOutboxStore, EfOutboxStore>();
 
+        services.AddDbContextFactory<IdentityDbContext>();
+
         return services;
     }
 }
