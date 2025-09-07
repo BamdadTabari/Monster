@@ -4,7 +4,6 @@ using System.Text;
 using Identity.Application.Abstractions;
 using Identity.Application.Options;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Identity.Infrastructure.Security;
@@ -25,14 +24,26 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options) : IJwtTokenSer
             new(JwtRegisteredClaimNames.Jti, jti),
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
         };
-        if (roles != null) claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
-        if (extraClaims != null) claims.AddRange(extraClaims);
+
+        if (roles != null)
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+        if (extraClaims != null)
+            claims.AddRange(extraClaims);
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opt.SigningKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var expires = now.AddMinutes(_opt.AccessTokenMinutes);
 
-        var token = new JwtSecurityToken(_opt.Issuer, _opt.Audience, claims, now, expires, creds);
+        var token = new JwtSecurityToken(
+            issuer: _opt.Issuer,
+            audience: _opt.Audience,
+            claims: claims,
+            notBefore: now,
+            expires: expires,
+            signingCredentials: creds
+        );
+
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
         return new TokenResult(jwt, expires, jti);
     }
