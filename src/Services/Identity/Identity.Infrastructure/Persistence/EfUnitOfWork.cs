@@ -3,26 +3,20 @@ using Monster.Persistence.Abstractions;
 
 namespace Identity.Infrastructure.Persistence;
 
-public sealed class EfUnitOfWork : IUnitOfWork
+public sealed class EfUnitOfWork(IdentityDbContext db) : IUnitOfWork
 {
-    private readonly IdentityDbContext _db;
-    public EfUnitOfWork(IdentityDbContext db) => _db = db;
-
-    public Task<int> SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
+    public Task<int> SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 
     public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(CancellationToken ct = default)
     {
-        var tx = await _db.Database.BeginTransactionAsync(ct);
-        return new EfUnitOfWorkTransaction(tx);
+        var tx = await db.Database.BeginTransactionAsync(ct);
+        return new EfTx(tx);
     }
 
-    private sealed class EfUnitOfWorkTransaction : IUnitOfWorkTransaction
+    private sealed class EfTx(IDbContextTransaction inner) : IUnitOfWorkTransaction
     {
-        private readonly IDbContextTransaction _tx;
-        public EfUnitOfWorkTransaction(IDbContextTransaction tx) => _tx = tx;
-
-        public Task CommitAsync(CancellationToken ct = default) => _tx.CommitAsync(ct);
-        public Task RollbackAsync(CancellationToken ct = default) => _tx.RollbackAsync(ct);
-        public ValueTask DisposeAsync() => _tx.DisposeAsync();
+        public Task CommitAsync(CancellationToken ct = default) => inner.CommitAsync(ct);
+        public Task RollbackAsync(CancellationToken ct = default) => inner.RollbackAsync(ct);
+        public ValueTask DisposeAsync() => inner.DisposeAsync();
     }
 }

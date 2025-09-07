@@ -8,23 +8,11 @@ namespace Identity.Infrastructure;
 /// EF Core DbContext for Identity service.
 /// For now, only OutboxMessages; user/role tables come later.
 /// </summary>
-public sealed class IdentityDbContext : DbContext
+public sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : DbContext(options)
 {
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
-
-    public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
-
-    protected override void OnModelCreating(ModelBuilder b)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        b.Entity<OutboxMessage>(cfg =>
-        {
-            cfg.ToTable("outbox_messages");
-            cfg.HasKey(x => x.Id);
-            cfg.Property(x => x.Type).IsRequired();
-            cfg.Property(x => x.Payload).IsRequired();
-            cfg.Property(x => x.DispatchedUtc).IsRequired();
-            cfg.Property(x => x.NextAttemptUtc);
-            cfg.Property(x => x.Attempt);
-        });
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
     }
 }

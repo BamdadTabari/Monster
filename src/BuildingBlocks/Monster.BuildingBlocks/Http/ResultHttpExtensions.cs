@@ -1,38 +1,42 @@
+using System.Net;
 using Microsoft.AspNetCore.Http;
 
 namespace Monster.BuildingBlocks.Http;
 
 /// <summary>
-/// Helpers to turn Result / Result&lt;T&gt; into minimal-API responses,
-/// using ResponseDto on success and ProblemDetails on failure.
+/// Bridges Result / Result&lt;T&gt; to HTTP (usable from minimal endpoints or controllers).
+/// Success → ResponseDto; Failure → ProblemDetails(400).
 /// </summary>
 public static class ResultHttpExtensions
 {
-    /// <summary>200/201/... with ResponseDto&lt;T&gt; on success; ProblemDetails(400) on failure.</summary>
     public static IResult ToHttp<T>(
         this Result<T> r,
         string okMessage = "OK",
         int successCode = StatusCodes.Status200OK)
     {
         if (r.IsSuccess)
-            return Results.Json(ResponseDto<T>.Ok(r.Value!, okMessage), statusCode: successCode);
+        {
+            // Centralized envelope. Respect desired successCode.
+            var dto = new ResponseDto<T>((HttpStatusCode)successCode, okMessage, r.Value);
+            return Results.Json(dto, statusCode: (int)dto.response_code);
+        }
 
-        // Use ProblemDetails for failures (consistent with Hellang middleware)
         return Results.Problem(
             title: "request.failed",
             detail: string.IsNullOrWhiteSpace(r.Error) ? "Unknown error." : r.Error,
             statusCode: StatusCodes.Status400BadRequest);
     }
 
-    /// <summary>200/... with ResponseDto on success; ProblemDetails(400) on failure.</summary>
     public static IResult ToHttp(
         this Result r,
         string okMessage = "OK",
         int successCode = StatusCodes.Status200OK)
     {
-       
         if (r.IsSuccess)
-            return Results.Json(ResponseDto<string>.Ok(okMessage), statusCode: successCode);
+        {
+            var dto = new ResponseDto<string>((HttpStatusCode)successCode, okMessage, null);
+            return Results.Json(dto, statusCode: (int)dto.response_code);
+        }
 
         return Results.Problem(
             title: "request.failed",
