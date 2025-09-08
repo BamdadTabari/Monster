@@ -12,14 +12,21 @@ using Serilog;
 using System.Net;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Serilog
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
     .WriteTo.Console()
     .CreateLogger();
-builder.Host.UseSerilog();
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((ctx, services, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .Enrich.FromLogContext()
+       .WriteTo.Console();
+});
 
 // Services
 builder.Services.AddEndpointsApiExplorer();
@@ -76,7 +83,11 @@ if (app.Environment.IsDevelopment())
 app.MapHealthChecks("/health/live");
 app.MapHealthChecks("/health/ready");
 
-app.UseCorrelationId();           
+app.UseCorrelationId(); 
+app.UseSerilogRequestLogging(o =>
+{
+    o.MessageTemplate = "HTTP {RequestMethod} {RequestPath} → {StatusCode} in {Elapsed:0.0000} ms";
+});          
 app.UseGlobalProblemDetails();    
 app.UseRouting();
 app.UseAuthentication();

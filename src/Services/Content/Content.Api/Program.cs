@@ -10,14 +10,21 @@ using Monster.BuildingBlocks.Outbox;
 using Serilog;
 using System.Net;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// ---- Serilog (console) ----
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
     .WriteTo.Console()
     .CreateLogger();
-builder.Host.UseSerilog();
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((ctx, services, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .Enrich.FromLogContext()
+       .WriteTo.Console();
+});
 
 // ---- Services ----
 builder.Services.AddEndpointsApiExplorer();
@@ -50,7 +57,11 @@ if (app.Environment.IsDevelopment())
 app.MapHealthChecks("/health/live");  // basic liveness
 app.MapHealthChecks("/health/ready"); // readiness (same for now; can extend with custom predicate)
 
-app.UseCorrelationId();           
+app.UseCorrelationId();     
+app.UseSerilogRequestLogging(o =>
+{
+    o.MessageTemplate = "HTTP {RequestMethod} {RequestPath} → {StatusCode} in {Elapsed:0.0000} ms";
+});      
 app.UseGlobalProblemDetails();    
 app.UseRouting();
 app.UseAuthentication();
