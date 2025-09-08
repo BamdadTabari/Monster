@@ -10,21 +10,22 @@ namespace Content.Infrastructure;
 /// </summary>
 public sealed class ContentDbContext : DbContext
 {
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
-
     public ContentDbContext(DbContextOptions<ContentDbContext> options) : base(options) { }
 
-    protected override void OnModelCreating(ModelBuilder b)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        b.Entity<OutboxMessage>(cfg =>
+        modelBuilder.HasDefaultSchema("content");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContentDbContext).Assembly);
+
+        foreach (var et in modelBuilder.Model.GetEntityTypes())
         {
-            cfg.ToTable("outbox_messages");
-            cfg.HasKey(x => x.Id);
-            cfg.Property(x => x.Type).IsRequired();
-            cfg.Property(x => x.Payload).IsRequired();
-            cfg.Property(x => x.DispatchedUtc).IsRequired();
-            cfg.Property(x => x.NextAttemptUtc);
-            cfg.Property(x => x.Attempt);
-        });
+            if (typeof(Monster.BuildingBlocks.Domain.AuditableEntity).IsAssignableFrom(et.ClrType))
+            {
+                // Use non-generic since type is only known at runtime
+                modelBuilder.Entity(et.ClrType)
+                    .Property<uint>(nameof(Monster.BuildingBlocks.Domain.AuditableEntity.Version))
+                    .IsRowVersion();   // Npgsql maps uint rowversion -> PostgreSQL xmin
+            }
+        }
     }
 }

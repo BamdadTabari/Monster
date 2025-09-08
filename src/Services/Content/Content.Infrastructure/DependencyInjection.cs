@@ -15,7 +15,21 @@ public static class DependencyInjection
                  "Host=localhost;Port=5432;Database=monster_content;Username=postgres;Password=postgres";
 
         services.AddDbContext<ContentDbContext>(opt =>
-            opt.UseNpgsql(cs));
+        {
+            opt.UseNpgsql(cs, npg =>
+        {
+            // history table line if you use schemas:
+            npg.MigrationsHistoryTable("__EFMigrationsHistory", "content");
+            npg.EnableRetryOnFailure( // defaults are fine; tweak as you wish
+                maxRetryCount: 6,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+        });
+            opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            opt.EnableDetailedErrors(false);
+            opt.EnableSensitiveDataLogging(false);
+        }
+        );
 
          // Repositories + Unit of Work (open generics)
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));

@@ -1,0 +1,36 @@
+name: monster-content-db
+
+services:
+  pg_content:
+    image: postgres:16
+    container_name: pg_content
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: monster
+      POSTGRES_PASSWORD: monster
+      POSTGRES_DB: monster_content
+    ports:
+      - "55433:5432" # avoid clash with Identity (uses 5432). Change if needed.
+    volumes:
+      - pg_content_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monster -d monster_content"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Optional: separate pgAdmin for Content (if Identity’s pgAdmin is already on 5050)
+  pgadmin_content:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin_content
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@monster.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5051:80"
+    depends_on:
+      - pg_content
+
+volumes:
+  pg_content_data:

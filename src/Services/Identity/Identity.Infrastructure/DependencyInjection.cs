@@ -19,8 +19,16 @@ public static class DependencyInjection
         var cs = config.GetConnectionString("IdentityDb")
                  ?? "Host=localhost;Port=5432;Database=monster_identity;Username=monster;Password=monster";
 
-        services.AddDbContext<IdentityDbContext>(opt => opt.UseNpgsql(cs));
-
+        services.AddDbContext<IdentityDbContext>(opt =>
+                    opt.UseNpgsql(cs, npg =>
+                {
+                    // history table line if you use schemas:
+                    npg.MigrationsHistoryTable("__EFMigrationsHistory", "identity");
+                    npg.EnableRetryOnFailure( // defaults are fine; tweak as you wish
+                        maxRetryCount: 6,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorCodesToAdd: null);
+                }));
         // repos + uow
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
@@ -35,7 +43,22 @@ public static class DependencyInjection
         // outbox
         services.AddScoped<IOutboxStore, EfOutboxStore>();
 
-        services.AddDbContextFactory<IdentityDbContext>();
+        services.AddDbContextFactory<IdentityDbContext>(options =>
+        {
+            options.UseNpgsql(cs, npg =>
+           {
+               // history table line if you use schemas:
+               // npg.MigrationsHistoryTable("__EFMigrationsHistory", "identity");
+               npg.EnableRetryOnFailure( // defaults are fine; tweak as you wish
+                   maxRetryCount: 6,
+                   maxRetryDelay: TimeSpan.FromSeconds(30),
+                   errorCodesToAdd: null);
+           });
+            options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            options.EnableDetailedErrors(false);
+            options.EnableSensitiveDataLogging(false);
+        }
+           );
 
         return services;
     }

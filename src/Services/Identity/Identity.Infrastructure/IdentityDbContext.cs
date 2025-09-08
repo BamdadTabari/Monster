@@ -16,5 +16,16 @@ public sealed class IdentityDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("identity");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityDbContext).Assembly);
+
+        foreach (var et in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(Monster.BuildingBlocks.Domain.AuditableEntity).IsAssignableFrom(et.ClrType))
+            {
+                // Use non-generic since type is only known at runtime
+                modelBuilder.Entity(et.ClrType)
+                    .Property<uint>(nameof(Monster.BuildingBlocks.Domain.AuditableEntity.Version))
+                    .IsRowVersion();   // Npgsql maps uint rowversion -> PostgreSQL xmin
+            }
+        }
     }
 }

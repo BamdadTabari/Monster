@@ -9,6 +9,9 @@ public abstract class AuditableEntity : Entity
     public bool IsDeleted { get; protected set; }
     public DateTime? DeletedAtUtc { get; protected set; }
 
+     // PostgreSQL concurrency token (maps to xmin via Fluent config)
+    public uint Version { get; private set; }
+    
     protected void Touch() => UpdatedAtUtc = DateTime.UtcNow;
 
     public virtual void SoftDelete()
