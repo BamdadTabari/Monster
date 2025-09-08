@@ -1,4 +1,3 @@
-using Content.Api.Endpoints;
 using Content.Application;
 using Content.Infrastructure;
 using Hellang.Middleware.ProblemDetails;
@@ -47,29 +46,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers(); 
-
-app.MapCategoryEndpoints();
-
-
 // Health endpoints
 app.MapHealthChecks("/health/live");  // basic liveness
 app.MapHealthChecks("/health/ready"); // readiness (same for now; can extend with custom predicate)
 
-// Minimal info & ping endpoints (for smoke tests)
-app.MapGet("/_info", () => Results.Json(new
-{
-    service = "Content.Api",
-    version = typeof(Program).Assembly.GetName().Version?.ToString(),
-    environment = app.Environment.EnvironmentName
-}, statusCode: StatusCodes.Status200OK));
-
-app.MapGet("/api/ping", () =>
-{
-    var res = ResponseDto<string>.Ok("pong");
-    return Results.Json(res, statusCode: (int)res.response_code);
-})
-.Produces((int)HttpStatusCode.OK);
+app.UseCorrelationId();           
+app.UseGlobalProblemDetails();    
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
 

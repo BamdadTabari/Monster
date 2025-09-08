@@ -71,17 +71,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
 
 // Health endpoints
 app.MapHealthChecks("/health/live");
 app.MapHealthChecks("/health/ready");
 
+app.UseCorrelationId();           
+app.UseGlobalProblemDetails();    
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.Run();
 
 public partial class Program { }
