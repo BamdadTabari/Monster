@@ -4,6 +4,7 @@ using Identity.Application.Options;
 using Identity.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -66,7 +67,12 @@ builder.Services
         };
     });
 builder.Services.AddAuthorization();
-
+builder.Services.Configure<ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownNetworks.Clear(); // trust all if you’re managing at the edge (or configure explicitly)
+    o.KnownProxies.Clear();
+});
 var app = builder.Build();
 
 
@@ -84,10 +90,33 @@ app.MapHealthChecks("/health/live");
 app.MapHealthChecks("/health/ready");
 
 app.UseCorrelationId(); 
-app.UseSerilogRequestLogging(o =>
+
+app.UseSerilogRequestLogging(opts =>
 {
-    o.MessageTemplate = "HTTP {RequestMethod} {RequestPath} → {StatusCode} in {Elapsed:0.0000} ms";
-});          
+    opts.MessageTemplate = "HTTP {RequestMethod} {RequestPath} → {StatusCode} in {Elapsed:0.0000} ms";
+    opts.EnrichDiagnosticContext = (diag, http) =>
+    {
+        // CorrelationId from your middleware (safe fallback)
+        var cid = http.Response.Headers["X-Correlation-ID"].ToString();
+        diag.Set("CorrelationId", string.IsNullOrWhiteSpace(cid) ? "n/a" : cid);
+
+        // Client IP (X-Forwarded-For first, else RemoteIpAddress)
+        string clientIp = "unknown";
+        if (http.Request.Headers.TryGetValue("X-Forwarded-For", out var fwd) && fwd.Count > 0)
+        {
+            clientIp = fwd.ToString().Split(',')[0].Trim();
+        }
+        else
+        {
+            clientIp = http.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        }
+        diag.Set("ClientIP", clientIp);
+
+        // Authenticated user (optional)
+        var user = http.User?.Identity?.IsAuthenticated == true ? (http.User.Identity?.Name ?? "authenticated") : "anonymous";
+        diag.Set("User", user);
+    };
+});        
 app.UseGlobalProblemDetails();    
 app.UseRouting();
 app.UseAuthentication();
