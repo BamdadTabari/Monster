@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Monster.BuildingBlocks;
 using Monster.BuildingBlocks.Http;
-using Identity.Application.Auth; // 👈 add this for ToActionResult()
+using Identity.Application.Auth;
+using Monster.BuildingBlocks.Messages; // 👈 add this for ToActionResult()
 
 namespace Identity.Api;
 
