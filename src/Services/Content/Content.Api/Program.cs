@@ -1,30 +1,13 @@
 using Content.Application;
 using Content.Infrastructure;
-using Hellang.Middleware.ProblemDetails;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Monster.BuildingBlocks;
-using Monster.BuildingBlocks.Messaging;
-using Monster.BuildingBlocks.Outbox;
+using Monster.BuildingBlocks.Logging;
 using Serilog;
-using System.Net;
 
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .Enrich.WithEnvironmentName()
-    .Enrich.WithProcessId()
-    .Enrich.WithThreadId()
-    .WriteTo.Console()
-    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog((ctx, services, cfg) =>
-{
-    cfg.ReadFrom.Configuration(ctx.Configuration)
-       .Enrich.FromLogContext()
-       .WriteTo.Console();
-});
+
+// serilog
+builder.ConfigureSerilog();
 
 // ---- Services ----
 builder.Services.AddEndpointsApiExplorer();

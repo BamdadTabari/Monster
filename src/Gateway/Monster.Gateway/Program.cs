@@ -1,11 +1,9 @@
 using Monster.BuildingBlocks;
-using Serilog;
+using Monster.BuildingBlocks.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Serilog
-Log.Logger = new LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().CreateLogger();
-builder.Host.UseSerilog();
+// serilog
+builder.ConfigureSerilog();
 
 // YARP + extras
 builder.Services.AddReverseProxy()

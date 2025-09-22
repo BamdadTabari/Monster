@@ -1,33 +1,19 @@
-using Hellang.Middleware.ProblemDetails;
 using Identity.Application;
 using Identity.Application.Options;
 using Identity.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Monster.BuildingBlocks;
+using Monster.BuildingBlocks.Logging;
 using Serilog;
-using System.Net;
 using System.Text;
 
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .Enrich.WithEnvironmentName()
-    .Enrich.WithProcessId()
-    .Enrich.WithThreadId()
-    .WriteTo.Console()
-    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog((ctx, services, cfg) =>
-{
-    cfg.ReadFrom.Configuration(ctx.Configuration)
-       .Enrich.FromLogContext()
-       .WriteTo.Console();
-});
+
+// serilog
+builder.ConfigureSerilog();
 
 // Services
 builder.Services.AddEndpointsApiExplorer();
