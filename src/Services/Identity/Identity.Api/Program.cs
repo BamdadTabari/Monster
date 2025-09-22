@@ -21,10 +21,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
-// MediatR scanning
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IApplicationAssemblyMarker).Assembly));
-
-
 builder.Services.AddMonsterBuildingBlocks();  // ProblemDetails + Validation pipeline + providers
 builder.Services.AddIdentityApplication();
 // Infra (Db + repo + uow + jwt + hasher + stores)

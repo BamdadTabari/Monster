@@ -1,4 +1,3 @@
-using Hellang.Middleware.ProblemDetails;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Monster.BuildingBlocks.Behaviors;
