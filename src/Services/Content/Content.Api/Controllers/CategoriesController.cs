@@ -9,7 +9,8 @@ using Monster.BuildingBlocks.Messages;
 namespace Content.Api.Controllers;
 
 [ApiController]
-[Route("api/categories")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/categories")]
 [Produces("application/json")]
 public sealed class CategoriesController(ISender sender) : ControllerBase
 {

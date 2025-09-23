@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Monster.BuildingBlocks;
 using Monster.BuildingBlocks.Http;
 using Identity.Application.Auth;
-using Monster.BuildingBlocks.Messages; // 👈 add this for ToActionResult()
 
 namespace Identity.Api;
 
 [ApiController]
-[Route("auth")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/auth")]
 [Produces("application/json")]
 public sealed class AuthController(IMediator mediator) : ControllerBase
 {

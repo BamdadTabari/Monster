@@ -1,6 +1,8 @@
 using Content.Application;
 using Content.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Monster.BuildingBlocks.Logging;
+using Monster.BuildingBlocks.Swagger;
 using Serilog;
 
 
@@ -9,9 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 // serilog
 builder.ConfigureSerilog();
 
+builder.Services.AddSwaggerWithVersioning();
+
 // ---- Services ----
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 // BuildingBlocks (ProblemDetails, Validation pipeline, providers, etc.)
@@ -30,10 +33,11 @@ var app = builder.Build();
 
 app.UseMonsterWebPipeline(); // Serilog request logging + ProblemDetails + Correlation-ID
 
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerWithUI(provider);
 }
 
 // Health endpoints

@@ -3,21 +3,23 @@ using Identity.Application.Options;
 using Identity.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.IdentityModel.Tokens;
 using Monster.BuildingBlocks;
 using Monster.BuildingBlocks.Logging;
+using Monster.BuildingBlocks.Swagger;
 using Serilog;
 using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSwaggerWithVersioning();
 
 // serilog
 builder.ConfigureSerilog();
 
 // Services
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
@@ -60,10 +62,11 @@ var app = builder.Build();
 
 app.UseMonsterWebPipeline(); // Serilog request logging + ProblemDetails + Correlation-ID
 
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerWithUI(provider);
 }
 
 
